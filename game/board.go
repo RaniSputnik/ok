@@ -14,3 +14,11 @@ type Board struct {
 	Size   int
 	Stones []Colour
 }
+
+func (b Board) index(x, y int) int {
+	return x + y*b.Size
+}
+
+func (b Board) pos(index int) (x, y int) {
+	return x % b.Size, y / b.Size
+}
