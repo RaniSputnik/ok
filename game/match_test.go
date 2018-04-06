@@ -37,3 +37,30 @@ func TestPlayAddsAStone(t *testing.T) {
 		t.Errorf("Expected: '%s', got: '%s'", playedStone.Colour, gotStone)
 	}
 }
+
+func TestBlackPlaysFirst(t *testing.T) {
+	m := game.New(game.BoardSizeTiny)
+	if got := m.Next(); got != game.Black {
+		t.Errorf("Expected: '%s', got: '%s'", game.Black, got)
+	}
+}
+
+func TestPlayFailsWhenNotYourTurn(t *testing.T) {
+	test := game.New(game.BoardSizeTiny)
+	_, err := test.Play(game.Stone{game.White, game.Position{0, 0}})
+	if err != game.ErrNotYourTurn {
+		t.Errorf("Expected: '%v', got: '%v'", game.ErrNotYourTurn, err)
+	}
+}
+
+func TestPlayChangesNext(t *testing.T) {
+	m := game.New(game.BoardSizeTiny)
+	m, _ = m.Play(game.Stone{game.Black, game.Position{0, 0}})
+	if got := m.Next(); got != game.White {
+		t.Errorf("Expected: '%s' to go second, got: '%s'", game.White, got)
+	}
+	m, _ = m.Play(game.Stone{game.White, game.Position{1, 0}})
+	if got := m.Next(); got != game.Black {
+		t.Errorf("Expected: '%s' to go third, got: '%s'", game.Black, got)
+	}
+}
