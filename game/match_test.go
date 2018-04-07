@@ -105,6 +105,28 @@ func TestCorneredStonesAreCaptured(t *testing.T) {
 	}
 }
 
+// TODO TestSurroundedGroupsAreCapturedTogether(t *testing.T) {}
+
+func TestCorneredGroupsAreCapturedTogether(t *testing.T) {
+	stones := []game.Stone{
+		white(0, 0), white(1, 0), white(2, 0), black(3, 0),
+		white(0, 1), black(1, 1), black(2, 1),
+	}
+	m := game.New(game.BoardSizeTiny, stones...)
+	m.Play(black(0, 2))
+
+	// Expect all white stones to be captured
+	for _, stone := range stones {
+		if stone.Colour != game.White {
+			continue
+		}
+		if got := m.Board().At(stone.X, stone.Y); got != game.None {
+			t.Errorf("Expected white stone at position {%d,%d} to be captured, instead got: '%s'",
+				stone.X, stone.Y, got)
+		}
+	}
+}
+
 func black(x, y int) game.Stone {
 	return stone(game.Black, x, y)
 }

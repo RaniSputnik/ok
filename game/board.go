@@ -1,5 +1,7 @@
 package game
 
+import "log"
+
 const (
 	// BoardSizeTiny is the recommended
 	// board size for new players.
@@ -29,10 +31,6 @@ func (b Board) At(x, y int) Colour {
 
 func (b Board) index(x, y int) int {
 	return x + y*b.Size
-}
-
-func (b Board) pos(index int) (x, y int) {
-	return x % b.Size, y / b.Size
 }
 
 func (b Board) removeGroup(g group) Board {
@@ -69,21 +67,38 @@ func (b Board) findGroup(x, y int) group {
 		return g
 	}
 
-	i := b.index(x, y)
-	g.Indexes = []int{i}
+	// TODO investigate simply reading the group
+	// to see if we've already visited a cell with
+	// the given index
+	visited := map[int]bool{}
 
-	// TODO walk all neighbours of the same colour
+	var walkGroup func(g group, x, y int) group
+	walkGroup = func(g group, x, y int) group {
+		log.Printf("Walk group: g=%v, x=%d, y=%d", g, x, y)
+		i := b.index(x, y)
+		if visited[i] {
+			return g
+		}
+		visited[i] = true
+		g.Indexes = append(g.Indexes, i)
 
-	liberties := 0
-	for _, n := range b.neighbours(x, y) {
-		if !b.Contains(n.x, n.y) {
-			continue
+		for _, n := range b.neighbours(x, y) {
+			if !b.Contains(n.x, n.y) {
+				continue
+			}
+			switch nColour := b.At(n.x, n.y); nColour {
+			case None:
+				g.Liberties++
+			case g.Colour:
+				g = walkGroup(g, n.x, n.y)
+			default:
+				// Opponent stone, no liberties here
+			}
 		}
-		if nColour := b.At(n.x, n.y); nColour == None {
-			liberties++
-		}
+		return g
 	}
-	g.Liberties = liberties
+
+	g = walkGroup(g, x, y)
 
 	return g
 }
