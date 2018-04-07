@@ -86,15 +86,22 @@ func TestPlayChangesNext(t *testing.T) {
 }
 
 func TestSurroundedStonesAreCaptured(t *testing.T) {
-	captureX, captureY := 2, 3
-	stones := []game.Stone{black(2, 2), black(1, 3), black(3, 3), white(captureX, captureY)}
-
+	stones := []game.Stone{black(2, 2), black(1, 3), black(3, 3), white(2, 3)}
 	m := game.New(game.BoardSizeTiny, stones...)
 	m.Play(black(2, 4))
 
-	if got := m.Board().At(captureX, captureY); got != game.None {
-		t.Errorf("Expected: '%s' at position {%d,%d}, got: '%s'",
-			game.None, captureX, captureY, got)
+	if got := m.Board().At(2, 3); got != game.None {
+		t.Errorf("Expected white stone at position {2,3} to be captured, instead got: '%s'", got)
+	}
+}
+
+func TestCorneredStonesAreCaptured(t *testing.T) {
+	stones := []game.Stone{black(0, 1), white(0, 0)}
+	m := game.New(game.BoardSizeTiny, stones...)
+	m.Play(black(1, 0))
+
+	if got := m.Board().At(0, 0); got != game.None {
+		t.Errorf("Expected white stone at position {0,0} to be captured, instead got: '%s'", got)
 	}
 }
 
