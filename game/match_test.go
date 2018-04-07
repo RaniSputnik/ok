@@ -23,9 +23,29 @@ func TestNewMatchSetsSize(t *testing.T) {
 	}
 }
 
+func TestNewMatchCreatesStones(t *testing.T) {
+	stones := []game.Stone{
+		black(0, 0),
+		black(7, 1),
+		white(1, 0),
+		white(5, 4),
+		white(3, 7),
+	}
+
+	m := game.New(game.BoardSizeTiny, stones...)
+	got := m.Board()
+
+	for _, stone := range stones {
+		if gotCol := got.At(stone.X, stone.Y); gotCol != stone.Colour {
+			t.Errorf("Expected: '%s' at {%d,%d}, got: '%s'",
+				stone.Colour, stone.X, stone.Y, gotCol)
+		}
+	}
+}
+
 func TestPlayAddsAStone(t *testing.T) {
 	test := game.New(game.BoardSizeTiny)
-	playedStone := game.Stone{game.Black, game.Position{0, 0}}
+	playedStone := black(0, 0)
 	got, err := test.Play(playedStone)
 
 	if err != nil {
@@ -47,7 +67,7 @@ func TestBlackPlaysFirst(t *testing.T) {
 
 func TestPlayFailsWhenNotYourTurn(t *testing.T) {
 	test := game.New(game.BoardSizeTiny)
-	_, err := test.Play(game.Stone{game.White, game.Position{0, 0}})
+	_, err := test.Play(white(0, 0))
 	if err != game.ErrNotYourTurn {
 		t.Errorf("Expected: '%v', got: '%v'", game.ErrNotYourTurn, err)
 	}
@@ -55,12 +75,24 @@ func TestPlayFailsWhenNotYourTurn(t *testing.T) {
 
 func TestPlayChangesNext(t *testing.T) {
 	m := game.New(game.BoardSizeTiny)
-	m, _ = m.Play(game.Stone{game.Black, game.Position{0, 0}})
+	m, _ = m.Play(black(0, 0))
 	if got := m.Next(); got != game.White {
 		t.Errorf("Expected: '%s' to go second, got: '%s'", game.White, got)
 	}
-	m, _ = m.Play(game.Stone{game.White, game.Position{1, 0}})
+	m, _ = m.Play(white(1, 0))
 	if got := m.Next(); got != game.Black {
 		t.Errorf("Expected: '%s' to go third, got: '%s'", game.Black, got)
 	}
+}
+
+func black(x, y int) game.Stone {
+	return stone(game.Black, x, y)
+}
+
+func white(x, y int) game.Stone {
+	return stone(game.White, x, y)
+}
+
+func stone(c game.Colour, x, y int) game.Stone {
+	return game.Stone{Colour: c, Position: game.Position{X: x, Y: y}}
 }

@@ -15,6 +15,18 @@ type Board struct {
 	Stones []Colour
 }
 
+func (b Board) Contains(x, y int) bool {
+	return x >= 0 && y >= 0 && x < b.Size && y < b.Size
+}
+
+func (b Board) At(x, y int) Colour {
+	if !b.Contains(x, y) {
+		return None
+	}
+	i := b.index(x, y)
+	return b.Stones[i]
+}
+
 func (b Board) index(x, y int) int {
 	return x + y*b.Size
 }

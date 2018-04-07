@@ -6,13 +6,22 @@ type Match struct {
 }
 
 func New(size int, stones ...Stone) Match {
-	return Match{
+	// TODO what to do about invalid stone positions?
+	// eg. overlapping stones or stones with no liberties.
+	m := Match{
 		next: Black,
 		current: Board{
 			Size:   size,
 			Stones: make([]Colour, size*size),
 		},
 	}
+
+	for _, stone := range stones {
+		i := m.current.index(stone.X, stone.Y)
+		m.current.Stones[i] = stone.Colour
+	}
+
+	return m
 }
 
 // Next returns the player who has the current turn.
