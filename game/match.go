@@ -5,7 +5,7 @@ type Match struct {
 	current Board
 }
 
-func New(size int, stones ...Stone) Match {
+func New(size int, stones ...Stone) *Match {
 	// TODO what to do about invalid stone positions?
 	// eg. overlapping stones or stones with no liberties.
 	m := Match{
@@ -21,24 +21,24 @@ func New(size int, stones ...Stone) Match {
 		m.current.Stones[i] = stone.Colour
 	}
 
-	return m
+	return &m
 }
 
 // Next returns the player who has the current turn.
-func (m Match) Next() Colour {
+func (m *Match) Next() Colour {
 	return m.next
 }
 
 // Board returns the current board state.
-func (m Match) Board() Board {
+func (m *Match) Board() Board {
 	return m.current
 }
 
-// Play adds a stone to the board, the mutated match
-// is returned. Returns an error if the move is invalid.
-func (m Match) Play(move Stone) (Match, error) {
+// Play adds a stone to the board.
+// Returns an error if the move is invalid.
+func (m *Match) Play(move Stone) error {
 	if move.Colour != m.Next() {
-		return m, ErrNotYourTurn
+		return ErrNotYourTurn
 	}
 
 	// TODO validate move
@@ -60,5 +60,5 @@ func (m Match) Play(move Stone) (Match, error) {
 
 	m.next = move.Colour.Opponent()
 	m.current = nextBoard
-	return m, nil
+	return nil
 }
