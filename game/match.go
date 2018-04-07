@@ -52,6 +52,12 @@ func (m Match) Play(move Stone) (Match, error) {
 	i := nextBoard.index(move.X, move.Y)
 	nextBoard.Stones[i] = move.Colour
 
+	for _, g := range nextBoard.neighbourGroups(move.X, move.Y) {
+		if g.Liberties == 0 {
+			nextBoard = nextBoard.removeGroup(g)
+		}
+	}
+
 	m.next = move.Colour.Opponent()
 	m.current = nextBoard
 	return m, nil
