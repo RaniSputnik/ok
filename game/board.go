@@ -1,7 +1,5 @@
 package game
 
-import "log"
-
 const (
 	// BoardSizeTiny is the recommended
 	// board size for new players.
@@ -74,7 +72,6 @@ func (b Board) findGroup(x, y int) group {
 
 	var walkGroup func(g group, x, y int) group
 	walkGroup = func(g group, x, y int) group {
-		log.Printf("Walk group: g=%v, x=%d, y=%d", g, x, y)
 		i := b.index(x, y)
 		if visited[i] {
 			return g
