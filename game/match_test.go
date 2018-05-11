@@ -142,23 +142,32 @@ func TestSuicidalMovesAreNotAllowed(t *testing.T) {
 	}
 }
 
-/*
-TODO not working because capturing is not robust
+func TestCapturesResolveBeforeSuicide(t *testing.T) {
+	stones := []game.Stone{
+		white(2, 1), white(1, 2), white(2, 3), white(3, 2),
+		black(3, 1), black(4, 2), black(3, 3),
+	}
+	m := game.New(game.BoardSizeTiny, stones...)
+
+	got := m.Play(black(2, 2))
+	if got != nil {
+		t.Errorf("Expected: '%v', got: '%v'", nil, got)
+	}
+}
+
 func TestPlayFailsWhenKoIsViolated(t *testing.T) {
 	stones := []game.Stone{
 		white(2, 1), white(1, 2), white(2, 3), white(3, 2),
 		black(3, 1), black(4, 2), black(3, 3),
 	}
 	m := game.New(game.BoardSizeTiny, stones...)
-	fmt.Println(m)
 	m.Play(black(2, 2))
-	fmt.Println(m)
 
 	got := m.Play(white(3, 2))
 	if expected := game.ErrViolatesKo; got != expected {
 		t.Errorf("Expected: '%v', got: '%v'", expected, got)
 	}
-}*/
+}
 
 func black(x, y int) game.Stone {
 	return stone(game.Black, x, y)

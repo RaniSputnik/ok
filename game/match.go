@@ -82,9 +82,9 @@ func (m *Match) Play(move Stone) error {
 
 func (m *Match) String() string {
 	b := m.Board()
-	border := "@" + strings.Repeat("---", b.Size) + "@"
+	border := "@" + strings.Repeat("---", b.Size) + "@\n"
 
-	str := border + "\n"
+	str := "\n" + border
 	i := 0
 	for y := 0; y < b.Size; y++ {
 		str += "|"
