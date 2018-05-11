@@ -34,6 +34,24 @@ func (b Board) At(x, y int) Colour {
 	return b.Stones[i]
 }
 
+func (b Board) equals(other Board) bool {
+	if b.Size != other.Size {
+		return false
+	}
+
+	if len(b.Stones) != len(other.Stones) {
+		return false
+	}
+
+	for i := range b.Stones {
+		if b.Stones[i] != other.Stones[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (b Board) index(x, y int) int {
 	return x + y*b.Size
 }
@@ -90,7 +108,8 @@ func (b Board) findGroup(x, y int) group {
 			if !b.Contains(n.x, n.y) {
 				continue
 			}
-			switch nColour := b.At(n.x, n.y); nColour {
+			nColour := b.At(n.x, n.y)
+			switch nColour {
 			case None:
 				g.Liberties++
 			case g.Colour:

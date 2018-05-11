@@ -127,6 +127,39 @@ func TestCorneredGroupsAreCapturedTogether(t *testing.T) {
 	}
 }
 
+func TestSuicidalMovesAreNotAllowed(t *testing.T) {
+	// TODO suicide is allowed in some rulesets
+	// https://senseis.xmp.net/?Suicide
+
+	stones := []game.Stone{
+		white(2, 1), white(1, 2), white(2, 3), white(3, 2),
+	}
+	m := game.New(game.BoardSizeTiny, stones...)
+
+	err := m.Play(black(2, 2))
+	if expected := game.ErrSuicidalMove; err != expected {
+		t.Errorf("Expected: '%v', Got: '%v'", expected, err)
+	}
+}
+
+/*
+TODO not working because capturing is not robust
+func TestPlayFailsWhenKoIsViolated(t *testing.T) {
+	stones := []game.Stone{
+		white(2, 1), white(1, 2), white(2, 3), white(3, 2),
+		black(3, 1), black(4, 2), black(3, 3),
+	}
+	m := game.New(game.BoardSizeTiny, stones...)
+	fmt.Println(m)
+	m.Play(black(2, 2))
+	fmt.Println(m)
+
+	got := m.Play(white(3, 2))
+	if expected := game.ErrViolatesKo; got != expected {
+		t.Errorf("Expected: '%v', got: '%v'", expected, got)
+	}
+}*/
+
 func black(x, y int) game.Stone {
 	return stone(game.Black, x, y)
 }

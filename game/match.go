@@ -1,7 +1,12 @@
 package game
 
+import (
+	"strings"
+)
+
 type Match struct {
 	next    Colour
+	prev    Board
 	current Board
 }
 
@@ -43,9 +48,11 @@ func (m *Match) Play(move Stone) error {
 
 	// TODO validate move
 
+	stonesCopy := make([]Colour, len(m.current.Stones))
+	copy(stonesCopy, m.current.Stones)
 	nextBoard := Board{
 		Size:   m.current.Size,
-		Stones: m.current.Stones,
+		Stones: stonesCopy,
 	}
 
 	// Set the colour of the square
@@ -58,7 +65,44 @@ func (m *Match) Play(move Stone) error {
 		}
 	}
 
+	g := nextBoard.findGroup(move.X, move.Y)
+	if g.Liberties == 0 {
+		return ErrSuicidalMove
+	}
+
+	if nextBoard.equals(m.prev) {
+		return ErrViolatesKo
+	}
+
 	m.next = move.Colour.Opponent()
+	m.prev = m.current
 	m.current = nextBoard
 	return nil
+}
+
+func (m *Match) String() string {
+	b := m.Board()
+	border := "@" + strings.Repeat("---", b.Size) + "@"
+
+	str := border + "\n"
+	i := 0
+	for y := 0; y < b.Size; y++ {
+		str += "|"
+		for x := 0; x < b.Size; x++ {
+
+			switch b.Stones[i] {
+			case Black:
+				str += " X "
+			case White:
+				str += " O "
+			default:
+				str += " . "
+			}
+
+			i++
+		}
+		str += "|\n"
+	}
+	str += border
+	return str
 }
