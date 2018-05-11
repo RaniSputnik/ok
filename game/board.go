@@ -10,15 +10,22 @@ const (
 	BoardSizeNormal = 19
 )
 
+// Board contains the board state.
 type Board struct {
 	Size   int
-	Stones []Colour
+	Stones []Colour // TODO private?
 }
 
+// Contains returns whether or not a given x,y position
+// is within the boards boundaries.
 func (b Board) Contains(x, y int) bool {
 	return x >= 0 && y >= 0 && x < b.Size && y < b.Size
 }
 
+// At returns the stone colour at the given x,y position.
+//
+// Returns `None` if the x,y position is empty or
+// is outside the board boundaries.
 func (b Board) At(x, y int) Colour {
 	if !b.Contains(x, y) {
 		return None
