@@ -46,7 +46,9 @@ func (m *Match) Play(move Stone) error {
 		return ErrNotYourTurn
 	}
 
-	// TODO validate move
+	if !m.current.Contains(move.X, move.Y) {
+		return ErrOutsideBoard
+	}
 
 	stonesCopy := make([]Colour, len(m.current.Stones))
 	copy(stonesCopy, m.current.Stones)

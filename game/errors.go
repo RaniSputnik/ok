@@ -7,6 +7,10 @@ var (
 	// attempts to make a move.
 	ErrNotYourTurn = errors.New("not your turn")
 
+	// ErrOutsideBoard is returned when the players
+	// move is outside the board they are playing on.
+	ErrOutsideBoard = errors.New("outside board")
+
 	// ErrSuicidalMove is returned when the move would
 	// result in the piece being immediately captured.
 	// https://senseis.xmp.net/?Suicide

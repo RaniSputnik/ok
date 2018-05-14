@@ -73,6 +73,30 @@ func TestPlayFailsWhenNotYourTurn(t *testing.T) {
 	}
 }
 
+func TestPlayFailsWhenMoveIsOutsideBoard(t *testing.T) {
+	testCases := []struct {
+		BoardSize    int
+		PlayX, PlayY int
+	}{
+		{BoardSize: 9, PlayX: -1, PlayY: -1},
+		{BoardSize: 9, PlayX: -1, PlayY: 0},
+		{BoardSize: 2, PlayX: 5, PlayY: -1},
+		{BoardSize: 2, PlayX: 5, PlayY: 0},
+		{BoardSize: 5, PlayX: 5, PlayY: 0},
+		{BoardSize: 5, PlayX: 3, PlayY: 5},
+		{BoardSize: 9, PlayX: 0, PlayY: 100},
+	}
+
+	expected := game.ErrOutsideBoard
+	for _, test := range testCases {
+		m := game.New(test.BoardSize)
+		err := m.Play(black(test.PlayX, test.PlayY))
+		if err != expected {
+			t.Errorf("Expected: '%v', Got: '%v'. %+v", expected, err, test)
+		}
+	}
+}
+
 func TestPlayChangesNext(t *testing.T) {
 	m := game.New(game.BoardSizeTiny)
 	m.Play(black(0, 0))
