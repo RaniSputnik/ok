@@ -206,6 +206,21 @@ func TestPlayFailsWhenKoIsViolated(t *testing.T) {
 	}
 }
 
+func TestSkipChangesNext(t *testing.T) {
+	m := game.New(game.BoardSizeTiny)
+	err := m.Play(game.Skip(game.Black))
+
+	if err != nil {
+		t.Fatalf("Expected nil error, Got: '%v'", err)
+	}
+
+	got := m.Next()
+
+	if expect := game.White; got != expect {
+		t.Errorf("Expected Next: '%s', Got: '%s'", expect, got)
+	}
+}
+
 func black(x, y int) game.Stone {
 	return stone(game.Black, x, y)
 }

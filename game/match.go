@@ -46,13 +46,40 @@ func (m *Match) Moves() []Move {
 	return m.moves
 }
 
-// Play adds a stone to the board.
+// Play applies a move to the current match.
 // Returns an error if the move is invalid.
-func (m *Match) Play(move Stone) error {
-	if move.Colour != m.Next() {
+//
+// Use m.Play(game.Stone{}) to play a new
+// stone on the board.
+//
+// Use m.Play(game.Skip(colour Colour)) to
+// skip the current players turn.
+func (m *Match) Play(move Move) error {
+	if move.Player() != m.Next() {
 		return ErrNotYourTurn
 	}
 
+	var err error
+	switch v := move.(type) {
+	case Stone:
+		err = m.playStone(v)
+	case skip:
+		err = m.skip()
+
+	// If we don't recognise the move, just
+	// add it to the list. This should allow
+	// us to easily extend with admin events etc.
+	default:
+		m.moves = append(m.moves, move)
+	}
+
+	if err == nil {
+		m.moves = append(m.moves, move)
+	}
+	return err
+}
+
+func (m *Match) playStone(move Stone) error {
 	if !m.current.Contains(move.X, move.Y) {
 		return ErrOutsideBoard
 	}
@@ -86,7 +113,11 @@ func (m *Match) Play(move Stone) error {
 	m.next = move.Colour.Opponent()
 	m.prev = m.current
 	m.current = nextBoard
-	m.moves = append(m.moves, move)
+	return nil
+}
+
+func (m *Match) skip() error {
+	m.next = m.next.Opponent()
 	return nil
 }
 

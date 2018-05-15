@@ -56,6 +56,16 @@ func (b Board) index(x, y int) int {
 	return x + y*b.Size
 }
 
+type group struct {
+	Colour    Colour
+	Indexes   []int
+	Liberties int
+}
+
+func (g group) empty() bool {
+	return len(g.Indexes) == 0
+}
+
 func (b Board) removeGroup(g group) Board {
 	for _, pos := range g.Indexes {
 		b.Stones[pos] = None
