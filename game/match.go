@@ -8,6 +8,8 @@ type Match struct {
 	next    Colour
 	prev    Board
 	current Board
+
+	moves []Move
 }
 
 func New(size int, stones ...Stone) *Match {
@@ -37,6 +39,11 @@ func (m *Match) Next() Colour {
 // Board returns the current board state.
 func (m *Match) Board() Board {
 	return m.current
+}
+
+// Moves returns the moves that have been played in this game
+func (m *Match) Moves() []Move {
+	return m.moves
 }
 
 // Play adds a stone to the board.
@@ -79,6 +86,7 @@ func (m *Match) Play(move Stone) error {
 	m.next = move.Colour.Opponent()
 	m.prev = m.current
 	m.current = nextBoard
+	m.moves = append(m.moves, move)
 	return nil
 }
 

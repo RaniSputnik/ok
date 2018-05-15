@@ -109,6 +109,19 @@ func TestPlayChangesNext(t *testing.T) {
 	}
 }
 
+func TestPlayAddsMoves(t *testing.T) {
+	playX, playY := 4, 2
+	m := game.New(game.BoardSizeTiny)
+	m.Play(black(playX, playY))
+	got := m.Moves()
+	if len(got) != 1 {
+		t.Fatalf("Expected one move to have been made, got: '%d'", len(got))
+	}
+	if _, ok := got[0].(game.Stone); !ok {
+		t.Errorf("Expected move of type: 'game.Stone', got: '%T'", got[0])
+	}
+}
+
 func TestSurroundedStonesAreCaptured(t *testing.T) {
 	stones := []game.Stone{black(2, 2), black(1, 3), black(3, 3), white(2, 3)}
 	m := game.New(game.BoardSizeTiny, stones...)
