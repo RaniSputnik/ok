@@ -12,6 +12,8 @@ type Match struct {
 	moves []Move
 }
 
+// New creates a new match with the given board
+// size and initial state.
 func New(size int, stones ...Stone) *Match {
 	// TODO what to do about invalid stone positions?
 	// eg. overlapping stones or stones with no liberties.

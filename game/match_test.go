@@ -66,11 +66,29 @@ func TestBlackPlaysFirst(t *testing.T) {
 }
 
 func TestPlayFailsWhenNotYourTurn(t *testing.T) {
-	m := game.New(game.BoardSizeTiny)
-	err := m.Play(white(0, 0))
-	if err != game.ErrNotYourTurn {
-		t.Errorf("Expected: '%v', got: '%v'", game.ErrNotYourTurn, err)
-	}
+	expect := game.ErrNotYourTurn
+
+	t.Run("Play", func(t *testing.T) {
+		m := game.New(game.BoardSizeTiny)
+		if err := m.Play(white(0, 0)); err != expect {
+			t.Errorf("Expected: '%v', got: '%v'", expect, err)
+		}
+	})
+
+	t.Run("Skip", func(t *testing.T) {
+		m := game.New(game.BoardSizeTiny)
+		if err := m.Play(game.Skip(game.White)); err != expect {
+			t.Errorf("Expected: '%v', got: '%v'", expect, err)
+		}
+	})
+
+	t.Run("SecondTurn", func(t *testing.T) {
+		m := game.New(game.BoardSizeTiny)
+		_ = m.Play(game.Skip(game.Black))
+		if err := m.Play(game.Skip(game.Black)); err != expect {
+			t.Errorf("Expected: '%v', got: '%v'", expect, err)
+		}
+	})
 }
 
 func TestPlayFailsWhenMoveIsOutsideBoard(t *testing.T) {
