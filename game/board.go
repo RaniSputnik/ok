@@ -52,6 +52,17 @@ func (b Board) equals(other Board) bool {
 	return true
 }
 
+// copy returns a new board with a copy of
+// stones slice, to avoid modifying the original
+func (b Board) copy() Board {
+	stonesCopy := make([]Colour, len(b.Stones))
+	copy(stonesCopy, b.Stones)
+	return Board{
+		Size:   b.Size,
+		Stones: stonesCopy,
+	}
+}
+
 func (b Board) index(x, y int) int {
 	return x + y*b.Size
 }

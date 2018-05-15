@@ -85,13 +85,7 @@ func (m *Match) playStone(move Stone) error {
 	if !m.current.Contains(move.X, move.Y) {
 		return ErrOutsideBoard
 	}
-
-	stonesCopy := make([]Colour, len(m.current.Stones))
-	copy(stonesCopy, m.current.Stones)
-	nextBoard := Board{
-		Size:   m.current.Size,
-		Stones: stonesCopy,
-	}
+	nextBoard := m.current.copy()
 
 	// Set the colour of the square
 	i := nextBoard.index(move.X, move.Y)
