@@ -3,7 +3,7 @@ package game_test
 import (
 	"testing"
 
-	"github.com/RaniSputnik/ko2/game"
+	"github.com/RaniSputnik/ok/game"
 )
 
 /*
