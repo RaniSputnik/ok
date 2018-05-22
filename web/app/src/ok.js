@@ -59,11 +59,24 @@ const renderLoading = (element) => {
 }
 
 const renderRefs = (element, data) => {
+    const boardSize = data.board.size;
+
     const table = document.createElement('table');
     table.className = 'ok-board';
+
+    const thead = document.createElement('thead');
+    const theadrow = document.createElement('tr');
+    const theaddata = document.createElement('td');
+    theaddata.colSpan = boardSize;
+    theaddata.appendChild(createPlayerNameEl(data.black));
+    theaddata.appendChild(document.createTextNode(' vs '));
+    theaddata.appendChild(createPlayerNameEl(data.white));
+    theadrow.appendChild(theaddata);
+    thead.appendChild(theadrow);
+    table.appendChild(thead);
+    
     const tbody = document.createElement('tbody');
 
-    const boardSize = data.board.size;
     const refs = [];
     refs.length = boardSize * boardSize;
     for (let y = 0; y < boardSize; y++) {
@@ -85,6 +98,13 @@ const renderRefs = (element, data) => {
     element.appendChild(table);
 
     return refs;
+}
+
+const createPlayerNameEl = (playerName) => {
+    const el = document.createElement('a');
+    el.href = '#'; // TODO link to player profile
+    el.innerHTML = playerName;
+    return el;
 }
 
 const renderStones = (refs, stones) => {
