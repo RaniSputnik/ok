@@ -8,26 +8,45 @@ var Board = function(id) {
 
 Board.prototype.load = function(cb) {
     // TODO are we already loading?
-    this.loading = setTimeout(() => {
-        this.loading = false;
-        const boardSize = 9;
-        const stones = [];
-        for (let i = 0; i < boardSize * boardSize; i++) {
-            stones.push(0);
-        }
+    this.loading = new XMLHttpRequest();
+    // TODO handle error states
+    this.loading.onreadystatechange = () => {
+        if (this.loading.readyState == 4 && this.loading.status == 200) {
+            const data = JSON.parse(this.loading.responseText);
+            this.loading = null;
+            console.log('Got API response', data);
 
-        this.data = {
-            created_by: 'RaniSputnik',
-            created_at: new Date(),
-            black: 'RaniSputnik',
-            white: 'Davezilla',
-            board: {
-                size: 9,
-                stones: stones,
-            },
+            this.data = mapApiResponse(data);
+            cb(null);
         }
-        cb(null);
-    }, 1000);
+    };
+    this.loading.open('GET', `http://localhost:8080/games/${this.id}`, true);
+    this.loading.send();
+}
+
+const mapApiResponse = (res) => {
+    const boardSize = res.board.size;
+    const stones = [];
+    for (let i = 0; i < boardSize * boardSize; i++) {
+        stones.push(0);
+    }
+
+    for (let j = 0; j < res.board.stones; j++) {
+        const stone = res.board.stones[j];
+        const i = index(boardSize, stone.x, stone.y);
+        switch (stone.colour) {
+            case "BLACK": stones[i] = BLACK; break;
+            case "WHITE": stones[i] = WHITE; break;
+        }
+    }
+
+    return {
+        ...res,
+        board: {
+            size: res.board.size,
+            stones: stones, // Format changed
+        },
+    };
 }
 
 Board.prototype.render = function(element) {
