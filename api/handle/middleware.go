@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/handlers"
 )
 
-func wrapGlobalMiddleware(h http.Handler) http.Handler {
+func WrapGlobalMiddleware(h http.Handler) http.Handler {
 	h = handlers.RecoveryHandler(handlers.PrintRecoveryStack(true))(h)
 	h = handlers.LoggingHandler(os.Stdout, h)
 	h = alwaysEmit("Content-Type", "application/json", h)

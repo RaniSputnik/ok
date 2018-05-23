@@ -34,6 +34,11 @@
     left: 50%;
 }
 
+.ok-board tbody td:hover:before, .ok-board td:hover:after {
+    background: black;
+    transform: scale(2,2);
+}
+
 .ok-board tbody td:before {
     width: 1px;
     height: 7px;
