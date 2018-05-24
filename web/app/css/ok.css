@@ -10,10 +10,25 @@
     line-height: 1.5rem;
 }
 
+.ok-board th {
+    height: 40px;
+}
+
 .ok-board a {
     color: #4c421a;
     text-decoration: none;
-    font-weight: 700;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 5px;
+    margin: 0px .4rem;
+}
+.ok-board a.black {
+    background: #4c421a;
+    color: white;
+}
+.ok-board a.white {
+    background: white;
+    color: #4c421a;
 }
 .ok-board a:hover {
     text-decoration: underline;
@@ -35,8 +50,12 @@
 }
 
 .ok-board tbody td:hover:before, .ok-board td:hover:after {
-    background: black;
-    transform: scale(2,2);
+    width: 30px;
+    height: 30px;
+    border-radius: 25px;
+    top: 0;
+    left: 0;
+    margin: 5px;
 }
 
 .ok-board tbody td:before {
@@ -175,5 +194,5 @@
     97%  { transform: scale(0.9994034586465400,0.9994034586465400); }
     98%  { transform: scale(0.9990742722728143,0.9990742722728143); }
     99%  { transform: scale(0.9987979887219980,0.9987979887219980); }
-    100% { transform: scale(0.9985733050485470,0.9985733050485470); }
+    100% { transform: scale(1.0000000000000000,1.0000000000000000); }
 }

@@ -55,7 +55,7 @@ Board.prototype.render = function(element) {
     }
 
     // Add a random stone, just cause
-    if (Math.random() > 0.9) {
+    if (Math.random() > 0.98) {
         const boardSize = this.data.board.size;
         const x = Math.floor(Math.random() * boardSize);
         const y = Math.floor(Math.random() * boardSize);
@@ -85,11 +85,11 @@ const renderRefs = (element, data) => {
 
     const thead = document.createElement('thead');
     const theadrow = document.createElement('tr');
-    const theaddata = document.createElement('td');
+    const theaddata = document.createElement('th');
     theaddata.colSpan = boardSize;
-    theaddata.appendChild(createPlayerNameEl(data.black));
+    theaddata.appendChild(createPlayerNameEl(data.black, BLACK));
     theaddata.appendChild(document.createTextNode(' vs '));
-    theaddata.appendChild(createPlayerNameEl(data.white));
+    theaddata.appendChild(createPlayerNameEl(data.white, WHITE));
     theadrow.appendChild(theaddata);
     thead.appendChild(theadrow);
     table.appendChild(thead);
@@ -119,10 +119,14 @@ const renderRefs = (element, data) => {
     return refs;
 }
 
-const createPlayerNameEl = (playerName) => {
+const createPlayerNameEl = (playerName, colour) => {
     const el = document.createElement('a');
     el.href = '#'; // TODO link to player profile
     el.innerHTML = playerName;
+    switch (colour) {
+        case BLACK: el.className = 'black'; break;
+        case WHITE: el.className = 'white'; break;
+    }
     return el;
 }
 
