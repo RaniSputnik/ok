@@ -85,6 +85,9 @@ func (m *Match) playStone(move Stone) error {
 	if !m.current.Contains(move.X, move.Y) {
 		return ErrOutsideBoard
 	}
+	if m.current.At(move.X, move.Y) != None {
+		return ErrPositionOccupied
+	}
 	nextBoard := m.current.copy()
 
 	// Set the colour of the square

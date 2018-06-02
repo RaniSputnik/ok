@@ -182,6 +182,16 @@ func TestCorneredGroupsAreCapturedTogether(t *testing.T) {
 	}
 }
 
+func TestPlayFailsIfAlreadyOccupied(t *testing.T) {
+	occupiedX, occupiedY := 2, 1
+	m := game.New(game.BoardSizeTiny, white(occupiedX, occupiedY))
+
+	err := m.Play(black(occupiedX, occupiedY))
+	if expected := game.ErrPositionOccupied; err != expected {
+		t.Errorf("Expected: '%v', Got: '%v'", expected, err)
+	}
+}
+
 func TestSuicidalMovesAreNotAllowed(t *testing.T) {
 	// TODO suicide is allowed in some rulesets
 	// https://senseis.xmp.net/?Suicide

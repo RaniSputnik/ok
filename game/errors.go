@@ -11,6 +11,10 @@ var (
 	// move is outside the board they are playing on.
 	ErrOutsideBoard = errors.New("outside board")
 
+	// ErrPositionOccupied is returned when there is
+	// already a stone in the move position.
+	ErrPositionOccupied = errors.New("position occupied")
+
 	// ErrSuicidalMove is returned when the move would
 	// result in the piece being immediately captured.
 	// https://senseis.xmp.net/?Suicide

@@ -1,7 +1,6 @@
 package handle_test
 
 import (
-	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -11,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/RaniSputnik/ok/api/handle"
-	"github.com/RaniSputnik/ok/api/model"
 	"github.com/RaniSputnik/ok/api/store"
 )
 
@@ -110,28 +108,4 @@ func setupRegister(body io.Reader) (*httptest.ResponseRecorder, *http.Request) {
 	r := httptest.NewRequest("POST", "/register", body)
 	r.Header.Set("Content-Type", "application/json")
 	return w, r
-}
-
-type mockPlayerStore struct {
-	Func struct {
-		SavePlayer struct {
-			Called struct {
-				With struct {
-					Ctx    context.Context
-					Player *model.Player
-				}
-				Times int
-			}
-			Returns struct {
-				Err error
-			}
-		}
-	}
-}
-
-func (m *mockPlayerStore) SavePlayer(ctx context.Context, player *model.Player) error {
-	m.Func.SavePlayer.Called.Times++
-	m.Func.SavePlayer.Called.With.Ctx = ctx
-	m.Func.SavePlayer.Called.With.Player = player
-	return m.Func.SavePlayer.Returns.Err
 }
