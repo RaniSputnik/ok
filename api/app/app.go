@@ -8,6 +8,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func fromMuxVars(key string) handle.RequestVarFunc {
+	return func(r *http.Request) string {
+		return mux.Vars(r)[key]
+	}
+}
+
 func New(config Config) *http.Server {
 	config = config.withSensibleDefaults()
 
@@ -15,7 +21,8 @@ func New(config Config) *http.Server {
 
 	r.HandleFunc("/register", handle.Register(config.Store))
 
-	r.HandleFunc("/games/{id}", handle.OneGame()).Methods(http.MethodGet)
+	r.HandleFunc("/games/{id}", handle.OneGame(fromMuxVars("id"), config.Store)).Methods(http.MethodGet)
+	r.HandleFunc("/games/{id}/stones", handle.Play(fromMuxVars("id"), config.Store)).Methods(http.MethodPost)
 
 	r.NotFoundHandler = handle.NotFound()
 

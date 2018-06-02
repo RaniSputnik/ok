@@ -1,6 +1,7 @@
 package handle_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -33,6 +34,49 @@ var testGame = model.Game{
 			},
 		},
 	},
+}
+
+func TestOneGame(t *testing.T) {
+	anyStore := func() *mockGameStore {
+		m := &mockGameStore{}
+		m.Func.GetGameByID.Returns.Game = &testGame
+		m.Func.GetGameByID.Returns.Err = nil
+		return m
+	}
+
+	validGameID := testGame.ID
+	givesID := func(id string) handle.RequestVarFunc {
+		return func(r *http.Request) string {
+			return id
+		}
+	}
+
+	t.Run("WithGameThatDoesNotExist", func(t *testing.T) {
+		w, r := setupOneGame()
+		mockStore := anyStore()
+		mockStore.Func.GetGameByID.Returns.Game = nil
+		mockStore.Func.GetGameByID.Returns.Err = nil
+		idDoesNotExist := "does_not_exist"
+		handle.OneGame(givesID(idDoesNotExist), mockStore)(w, r)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+		expectJSON := `{"type":"ResourceNotFound", "message":"Could not find game with id: '` + idDoesNotExist + `'"}`
+		assert.JSONEq(t, expectJSON, w.Body.String())
+	})
+
+	t.Run("WithValidGameID", func(t *testing.T) {
+		testGameBytes, err := json.Marshal(testGame)
+		if err != nil {
+			t.Fatal(err)
+		}
+		validGameJSON := string(testGameBytes)
+
+		w, r := setupOneGame()
+		handle.OneGame(givesID(validGameID), anyStore())(w, r)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.JSONEq(t, validGameJSON, w.Body.String())
+	})
 }
 
 func TestPlay(t *testing.T) {
@@ -213,6 +257,12 @@ func TestPlay(t *testing.T) {
 		assert.Equal(t, http.StatusCreated, w.Code)
 		assert.JSONEq(t, `{"colour":"White","x":4,"y":2}`, w.Body.String())
 	})
+}
+
+func setupOneGame() (*httptest.ResponseRecorder, *http.Request) {
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodGet, "/games/ID", nil)
+	return w, r
 }
 
 func setupPlay(body io.Reader) (*httptest.ResponseRecorder, *http.Request) {

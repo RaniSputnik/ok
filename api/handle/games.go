@@ -3,15 +3,13 @@ package handle
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/RaniSputnik/ok/api/kontext"
-	"github.com/RaniSputnik/ok/api/model"
 	"github.com/RaniSputnik/ok/api/store"
 	"github.com/RaniSputnik/ok/game"
 )
 
-var testGame = model.Game{
+/*var testGame = model.Game{
 	CreatedBy: "Alice",
 	CreatedAt: time.Now().In(time.UTC),
 	Black:     "Alice",
@@ -26,11 +24,20 @@ var testGame = model.Game{
 			},
 		},
 	},
-}
+}*/
 
-func OneGame() http.HandlerFunc {
+func OneGame(getGameID RequestVarFunc, db store.Game) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(&testGame)
+		gameID := getGameID(r)
+		g, err := db.GetGameByID(r.Context(), gameID)
+		panicIf(err)
+
+		if g == nil {
+			writeError(w, errResourceNotFound("game", gameID))
+			return
+		}
+
+		json.NewEncoder(w).Encode(g)
 	}
 }
 
