@@ -72,6 +72,11 @@ func errUsernameTaken(username string) HTTPError {
 	return HTTPError{http.StatusConflict, "UsernameTaken", fmt.Sprintf("Username '%s' already in use.", username)}
 }
 
+func errInternalServerError(errorID string) HTTPError {
+	msg := fmt.Sprintf("An error occurred. Error id: '%s'", errorID)
+	return HTTPError{http.StatusInternalServerError, "InternalServerError", msg}
+}
+
 func writeError(w http.ResponseWriter, err HTTPError) {
 	w.WriteHeader(err.Status)
 	json.NewEncoder(w).Encode(err)
