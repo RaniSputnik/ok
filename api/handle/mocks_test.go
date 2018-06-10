@@ -7,6 +7,30 @@ import (
 	"github.com/RaniSputnik/ok/game"
 )
 
+type mockAuthService struct {
+	Func struct {
+		Token struct {
+			Returns struct {
+				Token string
+			}
+		}
+		Verify struct {
+			Returns struct {
+				Player string
+				OK     bool
+			}
+		}
+	}
+}
+
+func (m *mockAuthService) Token(player *model.Player) string {
+	return m.Func.Token.Returns.Token
+}
+
+func (m *mockAuthService) Verify(tokenString string) (player string, ok bool) {
+	return m.Func.Verify.Returns.Player, m.Func.Verify.Returns.OK
+}
+
 type mockPlayerStore struct {
 	Func struct {
 		GetPlayer struct {

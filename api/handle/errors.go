@@ -60,7 +60,7 @@ func errInvalidParameter(param string) HTTPError {
 }
 
 func errUnauthorized() HTTPError {
-	return HTTPError{http.StatusUnauthorized, "Unauthorized", "Missing user credentials."}
+	return HTTPError{http.StatusUnauthorized, "Unauthorized", "User credentials are missing or invalid."}
 }
 
 func errNotParticipating() HTTPError {

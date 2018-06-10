@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"os"
 	"runtime/debug"
+	"strings"
 
+	"github.com/RaniSputnik/ok/api/auth"
 	"github.com/RaniSputnik/ok/api/kontext"
-	"github.com/RaniSputnik/ok/api/model"
 	"github.com/RaniSputnik/ok/api/store"
 	"github.com/rs/xid"
 
@@ -43,14 +44,32 @@ func recoveryHandler(h http.Handler) http.Handler {
 	})
 }
 
-func Auth(h http.Handler, db store.Player) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		player := model.Player{
-			Username: "TODO",
-		}
-		ctxWithPlayer := kontext.WithPlayer(r.Context(), &player)
-		r = r.WithContext(ctxWithPlayer)
+type Middleware func(h http.Handler) http.Handler
 
-		h.ServeHTTP(w, r)
+func Auth(authSvc auth.Service, db store.Player) Middleware {
+	return func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+
+			authorization := r.Header.Get("Authorization")
+			tokenString := strings.TrimPrefix(authorization, "Bearer ")
+			username, ok := authSvc.Verify(tokenString)
+			if !ok {
+				writeError(w, errUnauthorized())
+				return
+			}
+
+			player, err := db.GetPlayer(ctx, username)
+			panicIf(err)
+			if player == nil {
+				writeError(w, errUnauthorized())
+				return
+			}
+
+			ctxWithPlayer := kontext.WithPlayer(ctx, player)
+			r = r.WithContext(ctxWithPlayer)
+
+			h.ServeHTTP(w, r)
+		})
 	}
 }

@@ -16,18 +16,17 @@ func fromMuxVars(key string) handle.RequestVarFunc {
 
 func New(config Config) *http.Server {
 	config = config.withSensibleDefaults()
+	auth := handle.Auth(config.AuthSvc, config.Store)
+
+	createGame := auth(handle.CreateGame(config.Store))
+	getOneGame := auth(handle.OneGame(fromMuxVars("id"), config.Store))
+	playStone := auth(handle.Play(fromMuxVars("id"), config.Store))
 
 	r := mux.NewRouter()
-
-	r.HandleFunc("/register", handle.Register(config.Store))
-
-	createGame := handle.Auth(handle.CreateGame(config.Store), config.Store)
-	getOneGame := handle.Auth(handle.OneGame(fromMuxVars("id"), config.Store), config.Store)
-	playStone := handle.Auth(handle.Play(fromMuxVars("id"), config.Store), config.Store)
-
-	r.HandleFunc("/games", createGame).Methods(http.MethodPost)
-	r.HandleFunc("/games/{id}", getOneGame).Methods(http.MethodGet)
-	r.HandleFunc("/games/{id}/stones", playStone).Methods(http.MethodPost)
+	r.Handle("/register", handle.Register(config.AuthSvc, config.Store))
+	r.Handle("/games", createGame).Methods(http.MethodPost)
+	r.Handle("/games/{id}", getOneGame).Methods(http.MethodGet)
+	r.Handle("/games/{id}/stones", playStone).Methods(http.MethodPost)
 
 	r.NotFoundHandler = handle.NotFound()
 
