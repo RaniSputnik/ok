@@ -34,13 +34,39 @@ var testGame = model.Game{
 			},
 		},
 	},
+	Moves: []model.Move{
+		model.Move{
+			Kind:    model.MoveKindStone,
+			Colour:  game.Black.String(),
+			Message: "Black stone played at D6",
+			X:       intPointer(3),
+			Y:       intPointer(5),
+		},
+	},
+}
+
+func intPointer(v int) *int {
+	return &v
 }
 
 func TestOneGame(t *testing.T) {
+
 	anyStore := func() *mockGameStore {
+		oneStonePlayedAtD6 := []game.Move{
+			game.Stone{
+				Colour: game.Black,
+				Position: game.Position{
+					X: 3,
+					Y: 5,
+				},
+			},
+		}
+
 		m := &mockGameStore{}
 		m.Func.GetGameByID.Returns.Game = &testGame
 		m.Func.GetGameByID.Returns.Err = nil
+		m.Func.GetGameMoves.Returns.Moves = oneStonePlayedAtD6
+		m.Func.GetGameMoves.Returns.Err = nil
 		return m
 	}
 

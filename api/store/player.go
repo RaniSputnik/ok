@@ -7,5 +7,6 @@ import (
 )
 
 type Player interface {
+	GetPlayer(ctx context.Context, username string) (*model.Player, error)
 	SavePlayer(ctx context.Context, input *model.Player) error
 }

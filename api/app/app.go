@@ -21,8 +21,13 @@ func New(config Config) *http.Server {
 
 	r.HandleFunc("/register", handle.Register(config.Store))
 
-	r.HandleFunc("/games/{id}", handle.OneGame(fromMuxVars("id"), config.Store)).Methods(http.MethodGet)
-	r.HandleFunc("/games/{id}/stones", handle.Play(fromMuxVars("id"), config.Store)).Methods(http.MethodPost)
+	createGame := handle.Auth(handle.CreateGame(config.Store), config.Store)
+	getOneGame := handle.Auth(handle.OneGame(fromMuxVars("id"), config.Store), config.Store)
+	playStone := handle.Auth(handle.Play(fromMuxVars("id"), config.Store), config.Store)
+
+	r.HandleFunc("/games", createGame).Methods(http.MethodPost)
+	r.HandleFunc("/games/{id}", getOneGame).Methods(http.MethodGet)
+	r.HandleFunc("/games/{id}/stones", playStone).Methods(http.MethodPost)
 
 	r.NotFoundHandler = handle.NotFound()
 

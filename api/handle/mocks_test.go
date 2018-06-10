@@ -9,6 +9,19 @@ import (
 
 type mockPlayerStore struct {
 	Func struct {
+		GetPlayer struct {
+			Called struct {
+				With struct {
+					Ctx      context.Context
+					Username string
+				}
+				Times int
+			}
+			Returns struct {
+				Player *model.Player
+				Err    error
+			}
+		}
 		SavePlayer struct {
 			Called struct {
 				With struct {
@@ -22,6 +35,13 @@ type mockPlayerStore struct {
 			}
 		}
 	}
+}
+
+func (m *mockPlayerStore) GetPlayer(ctx context.Context, username string) (*model.Player, error) {
+	m.Func.GetPlayer.Called.Times++
+	m.Func.GetPlayer.Called.With.Ctx = ctx
+	m.Func.GetPlayer.Called.With.Username = username
+	return m.Func.GetPlayer.Returns.Player, m.Func.GetPlayer.Returns.Err
 }
 
 func (m *mockPlayerStore) SavePlayer(ctx context.Context, player *model.Player) error {
@@ -59,6 +79,18 @@ type mockGameStore struct {
 				Err   error
 			}
 		}
+		SaveGame struct {
+			Called struct {
+				With struct {
+					Ctx  context.Context
+					Game *model.Game
+				}
+				Times int
+			}
+			Returns struct {
+				Err error
+			}
+		}
 		SaveStone struct {
 			Called struct {
 				With struct {
@@ -87,6 +119,13 @@ func (m *mockGameStore) GetGameMoves(ctx context.Context, gameID string) ([]game
 	m.Func.GetGameMoves.Called.With.Ctx = ctx
 	m.Func.GetGameMoves.Called.With.GameID = gameID
 	return m.Func.GetGameMoves.Returns.Moves, m.Func.GetGameMoves.Returns.Err
+}
+
+func (m *mockGameStore) SaveGame(ctx context.Context, game *model.Game) error {
+	m.Func.SaveGame.Called.Times++
+	m.Func.SaveGame.Called.With.Ctx = ctx
+	m.Func.SaveGame.Called.With.Game = game
+	return m.Func.SaveGame.Returns.Err
 }
 
 func (m *mockGameStore) SaveStone(ctx context.Context, gameID string, stone game.Stone) error {

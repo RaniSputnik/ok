@@ -59,6 +59,10 @@ func errInvalidParameter(param string) HTTPError {
 	return HTTPError{http.StatusBadRequest, "InvalidParameter", fmt.Sprintf("A parameter is invalid: '%s'.", param)}
 }
 
+func errUnauthorized() HTTPError {
+	return HTTPError{http.StatusUnauthorized, "Unauthorized", "Missing user credentials."}
+}
+
 func errNotParticipating() HTTPError {
 	return HTTPError{http.StatusForbidden, "NotParticipating", "You are not a player of this game."}
 }

@@ -6,6 +6,9 @@ import (
 	"os"
 	"runtime/debug"
 
+	"github.com/RaniSputnik/ok/api/kontext"
+	"github.com/RaniSputnik/ok/api/model"
+	"github.com/RaniSputnik/ok/api/store"
 	"github.com/rs/xid"
 
 	"github.com/gorilla/handlers"
@@ -38,4 +41,16 @@ func recoveryHandler(h http.Handler) http.Handler {
 
 		h.ServeHTTP(w, r)
 	})
+}
+
+func Auth(h http.Handler, db store.Player) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		player := model.Player{
+			Username: "TODO",
+		}
+		ctxWithPlayer := kontext.WithPlayer(r.Context(), &player)
+		r = r.WithContext(ctxWithPlayer)
+
+		h.ServeHTTP(w, r)
+	}
 }

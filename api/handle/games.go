@@ -3,39 +3,37 @@ package handle
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/RaniSputnik/ok/api/kontext"
+	"github.com/RaniSputnik/ok/api/mapping"
+	"github.com/RaniSputnik/ok/api/model"
 	"github.com/RaniSputnik/ok/api/store"
 	"github.com/RaniSputnik/ok/game"
 )
 
-/*var testGame = model.Game{
-	CreatedBy: "Alice",
-	CreatedAt: time.Now().In(time.UTC),
-	Black:     "Alice",
-	White:     "Bob",
-	Board: model.Board{
-		Size: game.BoardSizeSmall,
-		Stones: []model.Stone{
-			model.Stone{
-				Colour: game.Black.String(),
-				X:      3,
-				Y:      5,
-			},
-		},
-	},
-}*/
-
 func OneGame(getGameID RequestVarFunc, db store.Game) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
 		gameID := getGameID(r)
-		g, err := db.GetGameByID(r.Context(), gameID)
+		g, err := db.GetGameByID(ctx, gameID)
 		panicIf(err)
 
 		if g == nil {
 			writeError(w, errResourceNotFound("game", gameID))
 			return
 		}
+
+		moves, err := db.GetGameMoves(ctx, gameID)
+		panicIf(err)
+
+		match := mapping.FromModelGame(*g)
+		for _, mv := range moves {
+			panicIf(match.Play(mv))
+		}
+		g.Board.Stones = mapping.ToModelStones(match)
+		g.Moves = mapping.ToModelMoves(moves)
 
 		json.NewEncoder(w).Encode(g)
 	}
@@ -129,5 +127,28 @@ func Play(getGameID RequestVarFunc, db store.Game) http.HandlerFunc {
 			X:      stone.X,
 			Y:      stone.Y,
 		})
+	}
+}
+
+func CreateGame(db store.Game) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		player := kontext.Player(r.Context())
+
+		createdGame := model.Game{
+			CreatedBy: player.Username,
+			CreatedAt: time.Now(),
+			Black:     player.Username,
+			White:     "",
+			Board: model.Board{
+				Size:   game.BoardSizeNormal,
+				Stones: []model.Stone{},
+			},
+			Moves: []model.Move{},
+		}
+
+		panicIf(db.SaveGame(r.Context(), &createdGame))
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(&createdGame)
 	}
 }

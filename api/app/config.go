@@ -1,6 +1,9 @@
 package app
 
-import "github.com/RaniSputnik/ok/api/store"
+import (
+	"github.com/RaniSputnik/ok/api/store"
+	"github.com/RaniSputnik/ok/api/store/inmemory"
+)
 
 type Config struct {
 	Addr  string
@@ -12,7 +15,7 @@ func (c Config) withSensibleDefaults() Config {
 		c.Addr = ":8080"
 	}
 	if c.Store == nil {
-		c.Store = store.NewInMemory()
+		c.Store = inmemory.New()
 	}
 	return c
 }
